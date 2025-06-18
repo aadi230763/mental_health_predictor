@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prediction Result</title>
+</head>
+<body>
+  <h2>Prediction Result</h2>
+  <p><strong>Prediction:</strong> {{ prediction }}</p>
+  <p><strong>Probability of seeking treatment:</strong> {{ probability }}%</p>
+
+  <h3>Top Contributing Factors:</h3>
+  <ul>
+    {% for feature, shap_value in explanation %}
+      <li>{{ feature }}: {{ "%.4f"|format(shap_value) }}</li>
+    {% endfor %}
+  </ul>
+
+  <a href="/">Predict Again</a>
+</body>
+</html>

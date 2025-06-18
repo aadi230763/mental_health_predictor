@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mental Health Treatment Prediction</title>
+</head>
+<body>
+  <h2>Mental Health Treatment Prediction</h2>
+
+  <!-- ✅ THIS LINE is critical -->
+  <form method="POST" action="/predict">
+
+    Age: <input type="number" name="Age" required><br><br>
+
+    Family History:
+    <select name="family_history" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select><br><br>
+
+    Work Interfere:
+    <select name="work_interfere" required>
+      <option value="Often">Often</option>
+      <option value="Rarely">Rarely</option>
+      <option value="Never">Never</option>
+      <option value="Sometimes">Sometimes</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
+
+    Benefits:
+    <select name="benefits" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
+
+    Care Options:
+    <select name="care_options" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Not sure">Not sure</option>
+    </select><br><br>
+
+    Leave:
+    <select name="leave" required>
+      <option value="Very easy">Very easy</option>
+      <option value="Somewhat easy">Somewhat easy</option>
+      <option value="Somewhat difficult">Somewhat difficult</option>
+      <option value="Very difficult">Very difficult</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
+
+    Supervisor:
+    <select name="supervisor" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Some of them">Some of them</option>
+    </select><br><br>
+
+    <input type="submit" value="Predict">
+  </form>
+</body>
+</html>
