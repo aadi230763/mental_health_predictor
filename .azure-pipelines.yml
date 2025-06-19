@@ -1,45 +1,38 @@
 trigger:
-- main  # Or your chosen branch
+  - main  # Or your specific branch name
 
 pool:
-  name: Default  # Use the name of your self-hosted agent pool
+  name: Default  # Name of your self-hosted agent pool
 
 variables:
   pythonVersion: '3.9'
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(pythonVersion)'
-    addToPath: true
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(pythonVersion)'
+      addToPath: true
 
-- script: |
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
+  - script: |
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+    displayName: 'Install dependencies'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: CopyFiles@2
+    inputs:
+      contents: '**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
-    replaceExistingArchive: true
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+      replaceExistingArchive: true
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: '<your-service-connection-name>'
-    appName: '<your-azure-app-service-name>'
-    package: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+      ArtifactName: 'drop'
