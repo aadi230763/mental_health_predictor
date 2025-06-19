@@ -1,23 +1,16 @@
 trigger:
-  - main  # Or your specific branch name
+  - main
 
 pool:
-  name: Default  # Name of your self-hosted agent pool
-
-variables:
-  pythonVersion: '3.9'
+  name: Default  # Your self-hosted Mac agent pool
 
 steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(pythonVersion)'
-      addToPath: true
-
   - script: |
       python3 -m venv venv
       source venv/bin/activate
+      pip install --upgrade pip
       pip install -r requirements.txt
-    displayName: 'Install dependencies'
+    displayName: 'Install Python dependencies'
 
   - task: CopyFiles@2
     inputs:
