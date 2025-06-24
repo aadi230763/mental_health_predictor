@@ -7,24 +7,18 @@ pool:
   name: Default  # Your self-hosted agent pool name
 
 variables:
-  azureWebAppName: 'EmployeeWise'  # Your exact web app name
+  azureWebAppName: 'EmployeeWise'
   packagePath: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
 
 steps:
 
-# Use Python 3.9 (skip if your self-hosted agent already uses 3.9)
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.9'
-    addToPath: true
-
-# Install required packages
+# ✅ Step 1: Install Python dependencies (using system Python)
 - script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
+    python3 -m pip install --upgrade pip
+    pip3 install -r requirements.txt
   displayName: 'Install Python Dependencies'
 
-# Zip the app contents
+# ✅ Step 2: Archive the app
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)'
@@ -34,7 +28,7 @@ steps:
     replaceExistingArchive: true
   displayName: 'Archive Flask App'
 
-# Publish the zipped artifact
+# ✅ Step 3: Publish build artifacts
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
@@ -42,10 +36,10 @@ steps:
     publishLocation: 'Container'
   displayName: 'Publish Build Artifact'
 
-# Deploy to Azure Web App (Linux)
+# ✅ Step 4: Deploy to Azure Web App
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'Azure subscription 1'  # ✅ Your service connection
+    azureSubscription: 'Azure subscription 1'  # Your service connection name
     appType: 'webAppLinux'
     appName: '$(azureWebAppName)'
     package: '$(packagePath)'
