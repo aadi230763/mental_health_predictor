@@ -7,6 +7,8 @@ from flask import Flask, request, render_template
 # Load model and encoders
 with open('app/model.pkl', 'rb') as f:
     model = pickle.load(f)
+print("Model type loaded:", type(model))
+
 
 with open('app/label_encoders.pkl', 'rb') as f:
     label_encoders = pickle.load(f)

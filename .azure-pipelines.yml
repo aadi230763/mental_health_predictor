@@ -1,45 +1,59 @@
 trigger:
-- main  # Or your chosen branch
+- main  # Or your actual working branch
 
 pool:
-  name: Default  # Use the name of your self-hosted agent pool
+  name: Default  # Change if your self-hosted agent pool has another name
 
 variables:
   pythonVersion: '3.9'
+  webAppName: '<YOUR_AZURE_WEBAPP_NAME>'  # Replace with your actual App Service name
+  artifactName: 'flaskapp'
+  zipName: 'flaskapp.zip'
 
 steps:
+
+# Use Python
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(pythonVersion)'
     addToPath: true
 
+# Install dependencies
 - script: |
-    python -m venv venv
+    python3 -m venv venv
     source venv/bin/activate
+    pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**'
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
+# Create deployment package
+- script: |
+    mkdir deploy_package
+    cp -r app templates main.py requirements.txt deploy_package/
+  displayName: 'Package Flask app files'
 
+# Zip for deployment
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    rootFolderOrFile: 'deploy_package'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(zipName)'
     replaceExistingArchive: true
+  displayName: 'Zip deployment package'
 
+# Publish artifact
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(zipName)'
+    ArtifactName: '$(artifactName)'
+  displayName: 'Publish build artifact'
 
+# Deploy to Azure App Service
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: '<your-service-connection-name>'
-    appName: '<your-azure-app-service-name>'
-    package: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+    azureSubscription: '<YOUR_AZURE_SERVICE_CONNECTION_NAME>'  # Must match your Azure DevOps service connection
+    appType: 'webApp'
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/$(zipName)'
+  displayName: 'Deploy to Azure App Service'

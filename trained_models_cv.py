@@ -78,3 +78,10 @@ with open('app/label_encoders.pkl', 'wb') as f:
 print("Model and encoders saved to app/model.pkl and app/label_encoders.pkl")
 
 print(df['treatment'].value_counts(normalize=True))
+
+print("Model type loaded:", type(model))
+
+
+print(f"Saving best model: {type(best_model)} to app/model.pkl")
+
+
