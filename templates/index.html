@@ -285,146 +285,59 @@
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Header Section -->
-        <div class="header-section">
-            <div class="logo-placeholder">
-                <i class="fas fa-brain"></i>
-            </div>
-            <h1 class="main-title">Mental Health Predictor</h1>
-            <!-- <p class="subtitle">AI-powered treatment recommendation system</p> -->
-        </div>
+  <h2>Mental Health Treatment Prediction</h2>
 
-        <!-- Form Card -->
-        <div class="form-card">
-            <!-- ✅ THIS LINE is critical - keeping exact form structure -->
-            <form method="POST" action="/predict" id="predictionForm">
-                
-                <div class="form-group">
-                    <label for="age" class="form-label">
-                        <i class="fas fa-calendar-alt"></i>
-                        Age
-                    </label>
-                    <input type="number" name="Age" id="age" class="form-control" required min="18" max="100" placeholder="Enter your age">
-                </div>
+  <!-- ✅ THIS LINE is critical -->
+  <form method="POST" action="/predict">
 
-                <div class="form-group">
-                    <label for="family_history" class="form-label">
-                        <i class="fas fa-users"></i>
-                        Family History of Mental Health Issues
-                    </label>
-                    <select name="family_history" id="family_history" class="form-select" required>
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                    </select>
-                </div>
+    Age: <input type="number" name="Age" required><br><br>
 
-                <div class="form-group">
-                    <label for="work_interfere" class="form-label">
-                        <i class="fas fa-briefcase"></i>
-                        Do emotional or mental health struggles ever affect your work performance?
-                    </label>
-                    <select name="work_interfere" id="work_interfere" class="form-select" required>
-                        <option value="" disabled selected>Select frequency</option>
-                        <option value="Often">Often</option>
-                        <option value="Rarely">Rarely</option>
-                        <option value="Never">Never</option>
-                        <option value="Sometimes">Sometimes</option>
-                        <option value="Don't know">Don't know</option>
-                    </select>
-                </div>
+    Family History:
+    <select name="family_history" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select><br><br>
 
-                <div class="form-group">
-                    <label for="benefits" class="form-label">
-                        <i class="fas fa-shield-alt"></i>
-                        Do you have mental health benefits coverage?
-                    </label>
-                    <select name="benefits" id="benefits" class="form-select" required>
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Don't know">Don't know</option>
-                    </select>
-                </div>
+    Work Interfere:
+    <select name="work_interfere" required>
+      <option value="Often">Often</option>
+      <option value="Rarely">Rarely</option>
+      <option value="Never">Never</option>
+      <option value="Sometimes">Sometimes</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
 
-                <div class="form-group">
-                    <label for="care_options" class="form-label">
-                        <i class="fas fa-hospital"></i>
-                        Do you know care options available to you?
-                    </label>
-                    <select name="care_options" id="care_options" class="form-select" required>
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Not sure">Not sure</option>
-                    </select>
-                </div>
+    Benefits:
+    <select name="benefits" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
 
-                <div class="form-group">
-                    <label for="leave" class="form-label">
-                        <i class="fas fa-calendar-times"></i>
-                        How easy is it to take medical leave for mental health?
-                    </label>
-                    <select name="leave" id="leave" class="form-select" required>
-                        <option value="" disabled selected>Select difficulty level</option>
-                        <option value="Very easy">Very easy</option>
-                        <option value="Somewhat easy">Somewhat easy</option>
-                        <option value="Somewhat difficult">Somewhat difficult</option>
-                        <option value="Very difficult">Very difficult</option>
-                        <option value="Don't know">Don't know</option>
-                    </select>
-                </div>
+    Care Options:
+    <select name="care_options" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Not sure">Not sure</option>
+    </select><br><br>
 
-                <div class="form-group">
-                    <label for="supervisor" class="form-label">
-                        <i class="fas fa-user-tie"></i>
-                        Would you discuss mental health issues with your supervisor?
-                    </label>
-                    <select name="supervisor" id="supervisor" class="form-select" required>
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Some of them">Some of them</option>
-                    </select>
-                </div>
+    Leave:
+    <select name="leave" required>
+      <option value="Very easy">Very easy</option>
+      <option value="Somewhat easy">Somewhat easy</option>
+      <option value="Somewhat difficult">Somewhat difficult</option>
+      <option value="Very difficult">Very difficult</option>
+      <option value="Don't know">Don't know</option>
+    </select><br><br>
 
-                <div class="submit-section">
-                    <button type="submit" class="btn btn-predict">
-                        <i class="fas fa-magic"></i>
-                        Get Prediction
-                    </button>
-                    <p class="info-text">
-                        <i class="fas fa-lock"></i>
-                        Your data is processed securely and anonymously
-                    </p>
-                </div>
-            </form>
-        </div>
-    </div>
+    Supervisor:
+    <select name="supervisor" required>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+      <option value="Some of them">Some of them</option>
+    </select><br><br>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Enhanced form submission with loading state
-        document.getElementById('predictionForm').addEventListener('submit', function() {
-            const submitBtn = document.querySelector('.btn-predict');
-            const formCard = document.querySelector('.form-card');
-            
-            submitBtn.classList.add('loading');
-            submitBtn.innerHTML = '<i class="fas fa-brain"></i> Analyzing...';
-            formCard.classList.add('loading');
-        });
-
-        // Add smooth scroll and focus effects
-        document.querySelectorAll('.form-control, .form-select').forEach(element => {
-            element.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'scale(1.02)';
-            });
-            
-            element.addEventListener('blur', function() {
-                this.parentElement.style.transform = 'scale(1)';
-            });
-        });
-    </script>
+    <input type="submit" value="Predict">
+  </form>
 </body>
 </html>
