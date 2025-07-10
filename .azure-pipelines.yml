@@ -7,7 +7,7 @@ pool:
   name: Default  # Your self-hosted agent pool name
 
 variables:
-  azureWebAppName: 'EmployeeWise'
+  azureWebAppName: 'Employee-Wellness'
   packagePath: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
 
 steps:
