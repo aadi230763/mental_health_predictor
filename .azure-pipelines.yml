@@ -4,7 +4,7 @@ trigger:
       - main
 
 pool:
-  name: Default  # Your self-hosted agent pool name
+  name: Default  
 
 variables:
   azureWebAppName: 'EmployeeWise'
@@ -12,13 +12,13 @@ variables:
 
 steps:
 
-# ✅ Step 1: Install Python dependencies (using system Python)
+# Install Python dependencies (using system Python)
 - script: |
     python3 -m pip install --upgrade pip
     pip3 install -r requirements.txt
   displayName: 'Install Python Dependencies'
 
-# ✅ Step 2: Archive the app
+#  Archive the app
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(Build.SourcesDirectory)'
@@ -28,7 +28,7 @@ steps:
     replaceExistingArchive: true
   displayName: 'Archive Flask App'
 
-# ✅ Step 3: Publish build artifacts
+# Publish build artifacts
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
@@ -36,10 +36,10 @@ steps:
     publishLocation: 'Container'
   displayName: 'Publish Build Artifact'
 
-# ✅ Step 4: Deploy to Azure Web App
+#  Deploy to Azure Web App
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'Azure subscription 1'  # Your service connection name
+    azureSubscription: 'Azure subscription 1'  
     appType: 'webAppLinux'
     appName: '$(azureWebAppName)'
     package: '$(packagePath)'

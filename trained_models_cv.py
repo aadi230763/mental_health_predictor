@@ -1,87 +1,113 @@
-import pandas as pd
-import numpy as np
+# trained_models_cv.py  (updated)
+
+import os
 import pickle
+import numpy as np
+import pandas as pd
+
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
+##############################################################################
 # 1. Load & preprocess data
-df = pd.read_csv('HealthSurvey.csv')
-df.drop(['comments', 'state', 'Timestamp'], axis=1, inplace=True)
-df = df[(df['Age'] >= 18) & (df['Age'] <= 65)]
-df.fillna({'self_employed': 'No', 'work_interfere': "Don't know"}, inplace=True)
+##############################################################################
+df = pd.read_csv("HealthSurvey.csv")
+df.drop(["comments", "state", "Timestamp"], axis=1, inplace=True)
+df = df[(df["Age"] >= 18) & (df["Age"] <= 65)]
+df.fillna({"self_employed": "No", "work_interfere": "Don't know"}, inplace=True)
 
-# 2. Select features & target
 features = [
-    'Age',
-    'family_history',
-    'work_interfere',
-    'benefits',
-    'care_options',
-    'leave',
-    'supervisor'
+    "Age",
+    "family_history",
+    "work_interfere",
+    "benefits",
+    "care_options",
+    "leave",
+    "supervisor",
 ]
-df = df[features + ['treatment']]
+ 
 
-# 3. Encode categoricals
+# Encode categoricals
 label_encoders = {}
 for col in df.columns:
-    if df[col].dtype == 'object':
+    if df[col].dtype == "object":
         le = LabelEncoder()
         df[col] = le.fit_transform(df[col].astype(str))
         label_encoders[col] = le
 
-X = df[features].values
-y = df['treatment'].values
+X, y = df[features].values, df["treatment"].values
 
-# 4. Define models
+##############################################################################
+# 2. Define models
+##############################################################################
 models = {
-    'Logistic Regression': LogisticRegression(max_iter=1000, class_weight='balanced'),
-    'Random Forest': RandomForestClassifier(n_estimators=200, class_weight='balanced'),
-    'XGBoost': XGBClassifier(eval_metric='logloss')
+    # ORIGINAL THREE
+    "Logistic Regression": LogisticRegression(max_iter=1_000, class_weight="balanced"),
+    "Random Forest": RandomForestClassifier(n_estimators=200, class_weight="balanced"),
+    "XGBoost": XGBClassifier(eval_metric="logloss"),
+    # NEW THREE
+    "Linear Discriminant": LinearDiscriminantAnalysis(),
+    "SVM (Linear)": SVC(kernel="linear", class_weight="balanced", probability=True),
+    "Gradient Boosting": GradientBoostingClassifier(),
 }
+ 
+initial_models = {
+    "Logistic Regression",
+    "Random Forest",
+    "XGBoost",
+}
+extra_models = set(models) - initial_models
 
-# 5. Cross‑validation setup
+##############################################################################
+# 3. Cross‑validation
+##############################################################################
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-scoring = ['accuracy', 'precision', 'recall', 'f1']
+scoring = ["accuracy", "precision", "recall", "f1"]
 
-# 6. Evaluate each model
 cv_results = {}
-for name, model in models.items():
-    scores = cross_validate(model, X, y, cv=cv, scoring=scoring, return_train_score=False)
-    cv_results[name] = {metric: np.mean(scores[f'test_{metric}']) for metric in scoring}
+for name, mdl in models.items():
+    scores = cross_validate(mdl, X, y, cv=cv, scoring=scoring, return_train_score=False)
+    cv_results[name] = {s: np.mean(scores[f"test_{s}"]) for s in scoring}
 
-# 7. Display results
-print("5‑Fold CV Results (mean scores):\n")
-for name, metrics in cv_results.items():
-    print(f"--- {name} ---")
-    for m, v in metrics.items():
-        print(f"{m.capitalize():>9}: {v:.4f}")
-    print()
+##############################################################################
+# 4. Pick best model (accuracy criterion)
+##############################################################################
+best_initial = max(initial_models, key=lambda n: cv_results[n]["accuracy"])
+best_extra = max(extra_models, key=lambda n: cv_results[n]["accuracy"])
 
-# 8. Select best model by F1
-best_name = max(cv_results, key=lambda n: cv_results[n]['f1'])
+if cv_results[best_extra]["accuracy"] > cv_results[best_initial]["accuracy"]:
+    best_name = best_extra
+else:
+    best_name = best_initial
+
 best_model = models[best_name]
-print(f"Selected Best Model: {best_name}\n")
 
-# 9. Retrain on full data & save
+##############################################################################
+# 5. Display results
+##############################################################################
+print("\n★ 5‑Fold CV mean scores ★\n")
+for name, metrics in cv_results.items():
+    print(f"{name:>20} | "
+          + " | ".join(f"{m}:{v:.3f}" for m, v in metrics.items()))
+print("\nSelected Best Model (by accuracy):", best_name, "\n")
+
+##############################################################################
+# 6. Retrain on full data & save
+##############################################################################
 best_model.fit(X, y)
-import os
-os.makedirs('app', exist_ok=True)
-with open('app/model.pkl', 'wb') as f:
+
+os.makedirs("app", exist_ok=True)
+with open("app/model.pkl", "wb") as f:
     pickle.dump(best_model, f)
-with open('app/label_encoders.pkl', 'wb') as f:
+with open("app/label_encoders.pkl", "wb") as f:
     pickle.dump(label_encoders, f)
 
-print("Model and encoders saved to app/model.pkl and app/label_encoders.pkl")
+print("✔ Model and encoders saved to app/model.pkl and app/label_encoders.pkl")
 
-print(df['treatment'].value_counts(normalize=True))
-
-print("Model type loaded:", type(model))
-
-
-print(f"Saving best model: {type(best_model)} to app/model.pkl")
-
-
+best_accuracy = cv_results[best_name]["accuracy"]
+print(f"Best model mean CV accuracy: {best_accuracy:.3f}")

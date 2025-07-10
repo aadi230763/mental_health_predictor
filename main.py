@@ -4,16 +4,14 @@ import pandas as pd
 import shap
 from flask import Flask, request, render_template
 
-# Load model and encoders
+# Load model and label encoders
 with open('app/model.pkl', 'rb') as f:
     model = pickle.load(f)
-print("Model type loaded:", type(model))
-
 
 with open('app/label_encoders.pkl', 'rb') as f:
     label_encoders = pickle.load(f)
 
-# Feature names expected by the model
+# Define feature order
 features = ['Age', 'family_history', 'work_interfere', 'benefits', 'care_options', 'leave', 'supervisor']
 
 app = Flask(__name__)
@@ -26,7 +24,7 @@ def home():
 def predict():
     input_data = {}
 
-    # Prepare the input from form
+# Collect and encode input data
     for feature in features:
         val = request.form[feature]
         if feature in label_encoders:
@@ -37,30 +35,34 @@ def predict():
 
     df = pd.DataFrame([input_data])
 
-    # Make prediction
-    prediction = model.predict(df)[0]
+# Make prediction
+    prediction = model.predict(df)[0]                     # 0 or 1
+    proba_arr = model.predict_proba(df)[0]                # [p(class_0), p(class_1)]
+    class_index = list(model.classes_).index(prediction)  # Ensure correct index
+    probability = proba_arr[class_index] * 100            # Correct confidence
+
+
+
+ # SHAP explanation
     try:
-        probability = model.predict_proba(df)[0][1]
-    except IndexError:
-        probability = model.predict_proba(df)[0][0]
-
-    # SHAP Explanation
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer.shap_values(df)
-
-    # Normalize SHAP format: shap_values can be list or array depending on model type
-    if isinstance(shap_values, list):
-        if len(shap_values) > 1:
-            shap_vals = shap_values[1][0]  # Class 1 values
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(df)  
+        if isinstance(shap_values, list):
+            if len(shap_values) > 1:
+                shap_vals = shap_values[1][0]  # For binary class: use class 1
+            else:
+                shap_vals = shap_values[0][0]
         else:
-            shap_vals = shap_values[0][0]  # Binary case fallback
-    else:
-        shap_vals = shap_values[0]
+            shap_vals = shap_values[0]
+    except:
+        explainer = shap.Explainer(model, df)
+        shap_values = explainer(df)
+        shap_vals = shap_values.values[0]
 
-    # Convert to numpy array if not already
+    # Flatten SHAP values
     shap_vals = np.array(shap_vals).flatten()
 
-    # Pair features with SHAP values
+    # Sort explanations by magnitude
     explanation = sorted(
         zip(df.columns.tolist(), shap_vals),
         key=lambda x: abs(x[1]),
@@ -70,7 +72,7 @@ def predict():
     return render_template(
         'result.html',
         prediction='Yes' if prediction == 1 else 'No',
-        probability=round(probability * 100, 2),
+        probability=round(probability, 2),
         explanation=explanation
     )
 
