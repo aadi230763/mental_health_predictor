@@ -1,20 +1,366 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Prediction Result</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prediction Results - Mental Health Treatment</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --info-color: #3b82f6;
+      --light-bg: #f8fafc;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --border-radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px 0;
+      color: var(--text-primary);
+    }
+
+    .results-container {
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .header-section {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    .logo-placeholder {
+      width: 70px;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .logo-placeholder i {
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .main-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 768px) {
+      .results-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .result-card {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .result-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+
+    .prediction-card {
+      text-align: center;
+    }
+
+    .prediction-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: pulse 2s infinite;
+    }
+
+    .prediction-yes {
+      color: var(--success-color);
+    }
+
+    .prediction-no {
+      color: var(--info-color);
+    }
+
+    .prediction-result {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .prediction-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .probability-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .probability-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .probability-bar {
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+
+    .probability-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+      border-radius: 6px;
+      transition: width 1.5s ease-out;
+      position: relative;
+    }
+
+    .probability-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .probability-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .factors-card { animation-delay: 0.2s; }
+
+    .factors-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .factors-title i {
+      color: var(--primary-color);
+    }
+
+    .factor-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: var(--light-bg);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border-left: 4px solid transparent;
+    }
+
+    .factor-item:hover {
+      background: #f1f5f9;
+      transform: translateX(5px);
+    }
+
+    .factor-positive { border-left-color: var(--success-color); }
+    .factor-negative { border-left-color: var(--danger-color); }
+
+    .factor-name {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .factor-value {
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .factor-value.positive {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success-color);
+    }
+
+    .factor-value.negative {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+    }
+
+    .actions-section {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      padding: 0.75rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .results-container { padding: 0 15px; }
+      .result-card { padding: 1.5rem; margin: 0 10px; }
+      .main-title { font-size: 1.75rem; }
+      .prediction-result { font-size: 1.5rem; }
+      .factors-title { font-size: 1.1rem; }
+    }
+  </style>
 </head>
 <body>
-  <h2>Prediction Result</h2>
-  <p><strong>Prediction:</strong> {{ prediction }}</p>
-  <p><strong>Probability of seeking treatment:</strong> {{ probability }}%</p>
+  <div class="results-container">
+    <!-- Header -->
+    <div class="header-section">
+      <div class="logo-placeholder"><i class="fas fa-chart-line"></i></div>
+      <h1 class="main-title">Prediction Results</h1>
+      <p class="subtitle">AI analysis complete</p>
+    </div>
 
-  <h3>Top Contributing Factors:</h3>
-  <ul>
-    {% for feature, shap_value in explanation %}
-      <li>{{ feature }}: {{ "%.4f"|format(shap_value) }}</li>
-    {% endfor %}
-  </ul>
+    <!-- Grid -->
+    <div class="results-grid">
+      <!-- Prediction Card -->
+      <div class="result-card prediction-card">
+        <div class="prediction-icon {{ 'prediction-yes' if prediction == 'Yes' else 'prediction-no' }}">
+          {% if prediction == 'Yes' %}
+            <i class="fas fa-check-circle"></i>
+          {% else %}
+            <i class="fas fa-info-circle"></i>
+          {% endif %}
+        </div>
 
-  <a href="/">Predict Again</a>
+        <div class="prediction-label">Treatment Recommendation</div>
+        <div class="prediction-result {{ 'prediction-yes' if prediction == 'Yes' else 'prediction-no' }}">
+          {{ prediction }}
+        </div>
+
+        {% if prediction == 'Yes' %}
+          <p style="color: var(--success-color); font-weight: 500;">Seeking treatment is recommended</p>
+        {% else %}
+          <p style="color: var(--info-color); font-weight: 500;">Treatment may not be immediately necessary</p>
+        {% endif %}
+
+        {% if probability is not none %}
+        <div class="probability-section">
+          <div class="probability-label">Confidence Level</div>
+          <div class="probability-bar">
+            <div class="probability-fill" style="width: {{ probability }}%"></div>
+          </div>
+          <div class="probability-value">{{ probability }}%</div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- SHAP Explanations -->
+      <div class="result-card factors-card">
+        <div class="factors-title">
+          <i class="fas fa-analytics"></i> Top Contributing Factors
+        </div>
+        <div class="factors-list">
+          {% for feature, shap_value in explanation %}
+            <div class="factor-item {{ 'factor-positive' if shap_value > 0 else 'factor-negative' }}">
+              <span class="factor-name">{{ feature }}</span>
+              <span class="factor-value {{ 'positive' if shap_value > 0 else 'negative' }}">
+                {{ "%.4f"|format(shap_value) }}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+          <small style="color: var(--text-secondary); font-size: 0.8rem;">
+            <i class="fas fa-info-circle"></i>
+            Positive values increase treatment likelihood, negative values decrease it.
+          </small>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-section">
+        <a href="/" class="btn-secondary">
+          <i class="fas fa-arrow-left"></i> Try Again
+        </a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
