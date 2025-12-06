@@ -1,0 +1,46 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: Default  
+
+variables:
+  azureWebAppName: 'Employee-Wellness'
+  packagePath: '$(Build.ArtifactStagingDirectory)/flaskapp.zip'
+
+steps:
+
+# Install Python dependencies (using system Python)
+- script: |
+    python3 -m pip install --upgrade pip
+    pip3 install -r requirements.txt
+  displayName: 'Install Python Dependencies'
+
+#  Archive the app
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(packagePath)'
+    replaceExistingArchive: true
+  displayName: 'Archive Flask App'
+
+# Publish build artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifact'
+
+#  Deploy to Azure Web App
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Azure subscription 1'  
+    appType: 'webAppLinux'
+    appName: '$(azureWebAppName)'
+    package: '$(packagePath)'
+  displayName: 'Deploy to Azure Web App'

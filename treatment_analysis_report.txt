@@ -1,0 +1,79 @@
+══════════════════════════════════════════════════════════════════════
+📊 Feature: FAMILY_HISTORY
+
+Original Category  Encoded Value % Seeking Treatment
+               No              0              35.43%
+              Yes              1              73.98%
+
+🔢 Label Encoding Mapping:
+  No → 0
+  Yes → 1
+══════════════════════════════════════════════════════════════════════
+📊 Feature: WORK_INTERFERE
+
+Original Category  Encoded Value % Seeking Treatment
+       Don't know              0               1.53%
+            Never              1              13.74%
+            Often              2               85.0%
+           Rarely              3              70.52%
+        Sometimes              4              76.94%
+
+🔢 Label Encoding Mapping:
+  Don't know → 0
+  Never → 1
+  Often → 2
+  Rarely → 3
+  Sometimes → 4
+══════════════════════════════════════════════════════════════════════
+📊 Feature: BENEFITS
+
+Original Category  Encoded Value % Seeking Treatment
+       Don't know              0               37.1%
+               No              1              48.25%
+              Yes              2              63.77%
+
+🔢 Label Encoding Mapping:
+  Don't know → 0
+  No → 1
+  Yes → 2
+══════════════════════════════════════════════════════════════════════
+📊 Feature: CARE_OPTIONS
+
+Original Category  Encoded Value % Seeking Treatment
+               No              0              41.28%
+         Not sure              1               39.1%
+              Yes              2              69.02%
+
+🔢 Label Encoding Mapping:
+  No → 0
+  Not sure → 1
+  Yes → 2
+══════════════════════════════════════════════════════════════════════
+📊 Feature: LEAVE
+
+ Original Category  Encoded Value % Seeking Treatment
+        Don't know              0               45.1%
+Somewhat difficult              1               64.8%
+     Somewhat easy              2              49.24%
+    Very difficult              3              68.04%
+         Very easy              4              49.75%
+
+🔢 Label Encoding Mapping:
+  Don't know → 0
+  Somewhat difficult → 1
+  Somewhat easy → 2
+  Very difficult → 3
+  Very easy → 4
+══════════════════════════════════════════════════════════════════════
+📊 Feature: SUPERVISOR
+
+Original Category  Encoded Value % Seeking Treatment
+               No              0              52.31%
+     Some of them              1              51.58%
+              Yes              2              48.34%
+
+🔢 Label Encoding Mapping:
+  No → 0
+  Some of them → 1
+  Yes → 2
+══════════════════════════════════════════════════════════════════════
